@@ -1,0 +1,13 @@
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\BlazeLibrary.exe
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\appsettings.Development.json
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\appsettings.json
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\BlazeLibrary.dll
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\BlazeLibrary.deps.json
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\BlazeLibrary.runtimeconfig.json
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\BlazeLibrary.pdb
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\System.Data.SqlClient.dll
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\runtimes\win-arm64\native\sni.dll
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\runtimes\win-x64\native\sni.dll
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\runtimes\win-x86\native\sni.dll
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+D:\BL360\BlazeLibrary\BlazeLibrary\obj\Release\net7.0\PubTmp\Out\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll

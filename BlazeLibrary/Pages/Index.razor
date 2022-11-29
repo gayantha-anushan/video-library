@@ -1,0 +1,119 @@
+﻿@page "/"
+@using BlazeLibrary.Data;
+@inject VideoService VideoService;
+
+<PageTitle>Index</PageTitle>
+
+<div class="top-row m-2">
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-6">
+            <input class="form-control" @bind="searchText" />
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary" @onclick="()=>searchNow()" >Search</button>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        @foreach(Video vid in videosFiltered)
+        {
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 col-xxl-2">
+                <div class="card m-2">
+                    <div class="card-header">
+                        <p class="card-title">@vid.Id @vid.Title</p>
+                    </div>
+                    <div class="card-body">
+                        @if(vid.borrowed_id != 0)
+                        {
+                            <p class="card-subtitle text-muted"><small>Video Borrowed!</small></p>
+                        }
+                        <p class="card-text">@vid.Description</p>
+                    </div>
+                    @if(vid.borrowed_id == 0) 
+                    {
+                        <div class="row">
+                            <div class="col-6">
+                                
+                            </div>
+                            <div class="col-6 mb-2">
+                                <button @onclick="()=>DeleteVideo(vid.Id)" class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-6 m-2">
+                                <button @onclick="()=>ReturnedVideo(vid.Id)" class="btn btn-success">Returned</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Video> videos = new();
+    private List<Video> videosFiltered = new();
+    private String searchText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoadVideos();
+    }
+
+    private void searchNow()
+    {
+        videosFiltered = new List<Video>();
+        if(searchText.Length == 0)
+        {
+            videosFiltered = videos;
+        }
+        else
+        {
+                for (int id = 0 ; id < videos.Count; id++)
+                { 
+                    if (videos[id].Title.ToUpper().Contains(searchText.ToUpper()))
+                    {
+                        videosFiltered.Add(videos[id]);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+        }
+    }
+
+    private async void LoadVideos()
+    {
+        videos = await VideoService.GetAllVideos();
+        videosFiltered = videos;
+    }
+
+    private void ReturnedVideo(int id)
+    {
+        bool lnd = VideoService.ReturnVideo(id);
+        if (lnd)
+        {
+            LoadVideos();
+        }
+    }
+
+    private void DeleteVideo(int id)
+    {
+        bool del = VideoService.DeleteVideo(id);
+        if (del)
+        {
+
+            LoadVideos();
+        }
+    }
+}

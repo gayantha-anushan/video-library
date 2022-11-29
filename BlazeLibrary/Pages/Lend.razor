@@ -1,0 +1,101 @@
+﻿@page "/lend";
+@using BlazeLibrary.Data;
+@inject VideoService VideoService
+
+<PageTitle>Lending</PageTitle>
+
+<h3>Lending</h3>
+
+<div class="container">
+    @if(error.Length > 1)
+    {
+        <div class="alert alert-danger">
+            @error
+        </div>
+    }
+    <div class="row">
+        <div class="col-4">
+            <label class="form-label">Video Id</label>
+            <input @bind="VideoId" class="form-control" type="number" placeholder="Video Id" />
+        </div>
+        <div class="col-4">
+            <label class="form-label">Member Id</label>
+            <input @bind="memberId"  class="form-control" type="number" placeholder="Member Id" />
+        </div>
+        <div class="col-4">
+            <button @onclick="()=>CheckVideo()" class="btn btn-primary">Check</button>
+            <button @onclick="()=>LendVideo()"  class="btn btn-success">Lend</button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private int VideoId, memberId;
+    private String error = "";
+    private bool isChecked = false;
+
+    private void CheckVideo()
+    {
+        if (VideoService.isBorrowed(VideoId))
+        {
+            error = "Video Already Borrowed!";
+        }
+        else
+        {
+            int itms = VideoService.isReserved(VideoId);
+            if(itms > 0)
+            {
+                List<int> usrs = VideoService.GetReservedMembers(VideoId);
+                foreach(int m in usrs)
+                {
+                    if(m == memberId)
+                    {
+                        isChecked = true;
+                        error = "Successfully Checked! you reserved previously!";
+                        break;
+                    }
+                }
+                if (!isChecked)
+                {
+                    error = "Item Already Reserved by other user!";
+                }
+            }
+            else
+            {
+                isChecked = true;
+                error = "Successfully Checked!";
+            }
+        }
+    }
+
+    private void LendVideo()
+    {
+        if (isChecked)
+        {
+            if (VideoId > 0 && memberId > 0)
+            {
+                bool vss = VideoService.LendVideo(VideoId, memberId);
+                if (vss)
+                {
+                    VideoId = 0;
+                    memberId = 0;
+                    error = "successfil";
+                }
+                else
+                {
+                    error = "fail";
+                }
+            }
+            else
+            {
+                error = "Error Field!";
+            }
+        }
+        else
+        {
+            error = "Please check avalability before lend";
+        }
+    }
+}
+ 

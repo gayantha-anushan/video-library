@@ -1,0 +1,190 @@
+﻿@page "/reservation"
+@using BlazeLibrary.Data;
+@inject ReservationService ReservationService;
+
+<h3>Reservation</h3>
+
+<div class="container">
+    @if(error.Length > 1)
+    {
+        <div class="alert alert-danger">
+            <p>@error</p>
+        </div>
+    }
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-3 mb-3">
+            <label class="form-label">Video Id</label>
+            <input type="number" @bind="VideoId" class="form-control" placeholder="Video Id"/>
+        </div>
+        <div class="col-3 mb-3">
+            <label class="form-label">Member Id</label>
+            <input type="number" @bind="UserId" class="form-control" placeholder="Member Id"/>
+        </div>
+        <div class="col-3 mb-3">
+            <label class="form-label">Start Date</label>
+            <input type="date" @bind="StartDate" class="form-control" placeholder="Start Date"/>
+        </div>
+        <div class="col-3 mb-3">
+            <label class="form-label">Due Date</label>
+            <input type="date" @bind="DueDate" class="form-control" placeholder="End Date"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3 mb-3">
+            <button @onclick="()=>ReserveVideo()" class="btn btn-success">Reserve</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4 m-2">
+            <label class="form-label">Video ID</label>
+            <input type="number" @bind="videoSearch" class="form-control" />
+        </div>
+        <div class="col-4 m-2">
+            <label class="form-label">Member ID</label>
+            <input type="number" @bind="userSearch" class="form-control" />
+        </div>
+        <div class="col-2 m-2">
+            <button class="btn btn-warning" @onclick="()=>searchMember()" >Search</button>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Video</th>
+                <th>Video Name</th>
+                <th>Member</th>
+                <th>Member Name</th>
+                <th>Start Date</th>
+                <th>Due Date</th>
+                <td>
+                    
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(ExtendedReservation eres in filteredReservations)
+            {
+                <tr>
+                    <td>@eres.VideoId</td>
+                    <td>@eres.VideoName</td>
+                    <td>@eres.MemberId</td>
+                    <td>@eres.MemberFirstName @eres.MemberLastName</td>
+                    <td>@eres.startDate</td>
+                    <td>@if (eres.endDate < DateTime.Now)
+                        {
+                            <div class="alert alert-danger">@eres.endDate</div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success">@eres.endDate</div>
+                        }
+                    </td>
+                    <td><button class="btn btn-danger" @onclick="()=>Remove(eres.VideoId,eres.MemberId)">Delete</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="container m-5"></div>
+
+@code {
+    private int VideoId,UserId,videoSearch,userSearch;
+    private DateTime StartDate = DateTime.Now, DueDate = DateTime.Now;
+    private String error = "";
+    private List<ExtendedReservation> allReservations,filteredReservations;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        LoadDetaiils();
+    }
+
+    private void searchMember()
+    {
+        filteredReservations = new List<ExtendedReservation>();
+        if(videoSearch > 0 && userSearch > 0)
+        {
+            for (int i = 0; i < allReservations.Count; i++)
+            {
+                if (allReservations[i].VideoId == videoSearch && allReservations[i].MemberId == userSearch)
+                {
+                    filteredReservations.Add(allReservations[i]);
+                }
+            }
+        }else if(videoSearch > 0)
+        {
+            for(int i = 0 ; i < allReservations.Count ; i++)
+            {
+                if(allReservations[i].VideoId == videoSearch)
+                {
+                    filteredReservations.Add(allReservations[i]);
+                }
+            }
+        }else if(userSearch > 0)
+        {
+            for (int j = 0; j < allReservations.Count; j++)
+            {
+                if (allReservations[j].MemberId == userSearch)
+                {
+                    filteredReservations.Add(allReservations[j]);
+                }
+            }
+        }
+        else
+        {
+            filteredReservations = allReservations;
+        }
+    }
+
+    private void Remove(int videoId,int memberId)
+    {
+        bool rem = ReservationService.DeleteReservation(videoId, memberId);
+        if (rem)
+        {
+            error = "Deletion Success!";
+            LoadDetaiils();
+        }
+        else
+        {
+            error = "Deletion Failed!";
+        }
+    }
+
+    private void ReserveVideo()
+    {
+        if(StartDate <= DueDate)
+        {
+            Reservatio rese = new Reservatio();
+            rese.VideoId = VideoId;
+            rese.UserId = UserId;
+            rese.StartDate = StartDate;
+            rese.DueDate = DueDate;
+            bool reserv = ReservationService.ReserveVideo(rese);
+            if (reserv)
+            {
+                error = "Reservation Success!";
+                LoadDetaiils();
+            }
+            else
+            {
+                error = "Reservation Failed!";
+            }
+        }
+        else
+        {
+            error = "due date must be greter than start date!";
+        }
+    }
+
+    private async void LoadDetaiils()
+    {
+        allReservations = await ReservationService.GetAllReservations();
+        filteredReservations = allReservations;
+    }
+}

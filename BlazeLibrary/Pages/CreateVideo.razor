@@ -1,0 +1,71 @@
+﻿@page "/new-video"
+@using BlazeLibrary.Data
+@inject VideoService VideoService
+@inject IJSRuntime Js
+
+<h3>CreateVideo</h3>
+
+@if(successMessage.Length > 1){
+    <div class="alert alert-primary">@successMessage</div>
+}
+@if (errorMessage.Length > 1)
+{
+    <div class="alert alert-danger">Error Occured! - @errorMessage</div>
+}
+
+<form>
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input class="form-control" placeholder="Title" type="text" value="@title" @oninput="(e) => title = e.Value.ToString()" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea value="@description" class="form-control" @oninput="(e) => description = e.Value.ToString()"></textarea>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-warning" @onclick="()=>Insert()">Create</button>
+    </div>
+</form>
+
+@code {
+    private String title = "";
+    private String description = "";
+    private String errorMessage = "";
+    private String successMessage = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private async void Insert()
+    {
+        errorMessage = "";
+        successMessage = "";
+        if(title == "")
+        {
+            errorMessage = "Title is empty";
+        }
+        else if(description == "")
+        {
+            errorMessage = "Description is Empty!";
+        }
+        else
+        {
+            Video video = new Video();
+            video.Title = title;
+            video.Description = description;
+            bool res = VideoService.InsertVideo(video);
+            if (res)
+            {
+                //Success
+                successMessage = "Successfully Inserted!";
+            }
+            else
+            {
+                //False
+                errorMessage = "Insertion Failture";
+            }
+        }
+    }
+}
